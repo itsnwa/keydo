@@ -44,5 +44,9 @@ export default {
   &.selected {
     background-color: var(--color-subtle-2);
   }
+
+  &.complete {
+    text-decoration: line-through;
+  }
 }
 </style>

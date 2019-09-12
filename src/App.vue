@@ -80,6 +80,16 @@ export default {
         });
       }
 
+      // Toggle completed ("space")
+      if (event.keyCode === 32 && this.selectedTask != null) {
+        const task = this.tasks[this.selectedTask];
+        db.collection("tasks")
+          .doc(task.id)
+          .update({
+            complete: !task.complete
+          });
+      }
+
       // Select Up
       if (event.keyCode === 38) {
         if (this.selectedTask && this.selectedTask >= 1) {
@@ -99,10 +109,8 @@ export default {
       }
 
       // Edit (Enter)
-      if (event.keyCode === 13) {
-        const task = this.tasks.filter(
-          (task, index) => index === this.selectedTask
-        )[0];
+      if (event.keyCode === 13 && this.selectedTask != null) {
+        const task = this.tasks[this.selectedTask];
         this.editTaskText = task.title;
         this.editActive = true;
         this.$nextTick(() => {
@@ -119,29 +127,23 @@ export default {
       db.collection("tasks").add({
         title: this.newTaskText,
         complete: false,
-        date_added: new Date(),
-        order: this.tasks.length + 1
+        date_added: new Date()
       });
       this.addNewActive = false;
       this.newTaskText = "";
     },
     updateTask() {
-      const task = this.tasks.filter(
-        (task, index) => index === this.selectedTask
-      )[0];
+      const task = this.tasks[this.selectedTask];
       db.collection("tasks")
         .doc(task.id)
         .update({
-          ...task,
           title: this.editTaskText
         });
       this.editActive = false;
     },
     moveTask() {},
     deleteTask() {
-      const task = this.tasks.filter(
-        (task, index) => index === this.selectedTask
-      )[0];
+      const task = this.tasks[this.selectedTask];
       db.collection("tasks")
         .doc(task.id)
         .delete();
