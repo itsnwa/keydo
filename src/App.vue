@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Logo />
-    <Guide />
+    <Guide :completed="currentTaskCompleted" />
     <main
       class="main"
       :class="{ center: tasks.length < 1 || addNewActive || editActive }"
@@ -147,6 +147,13 @@ export default {
       db.collection("tasks")
         .doc(task.id)
         .delete();
+    }
+  },
+  computed: {
+    currentTaskCompleted() {
+      return this.selectedTask != null
+        ? this.tasks[this.selectedTask].complete
+        : false;
     }
   },
   firestore: {
