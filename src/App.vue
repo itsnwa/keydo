@@ -15,21 +15,19 @@
         :selected="selectedTask"
       />
       <div class="input-wrapper" v-if="addNewActive">
-        <input
-          type="text"
+        <textarea
           v-model="newTaskText"
-          @keyup.enter.prevent.stop="addTask"
+          @keyup.shift.enter.stop="addTask"
           placeholder="Add new task"
           ref="newTaskInput"
-        />
+        ></textarea>
       </div>
       <div class="input-wrapper" v-if="editActive">
-        <input
-          type="text"
+        <textarea
           v-model="editTaskText"
-          @keyup.enter.prevent.stop="updateTask"
+          @keyup.shift.enter.stop="saveTaskText"
           ref="editTaskInput"
-        />
+        ></textarea>
       </div>
     </main>
   </div>
@@ -40,6 +38,7 @@ import { db } from "./db";
 import Logo from "@/components/Logo";
 import Guide from "@/components/Guide";
 import TaskList from "@/components/TaskList";
+import marked from "marked";
 
 export default {
   name: "app",
@@ -52,10 +51,10 @@ export default {
     return {
       addNewActive: false,
       newTaskText: "",
+      editTaskText: "",
       tasks: [],
       selectedTask: null,
-      editActive: false,
-      editTaskText: ""
+      editActive: false
     };
   },
   methods: {
@@ -111,7 +110,7 @@ export default {
       // Edit (Enter)
       if (event.keyCode === 13 && this.selectedTask != null) {
         const task = this.tasks[this.selectedTask];
-        this.editTaskText = task.title;
+        this.editTaskText = task.markdown;
         this.editActive = true;
         this.$nextTick(() => {
           this.$refs.editTaskInput.focus();
@@ -125,21 +124,24 @@ export default {
     },
     addTask() {
       db.collection("tasks").add({
-        title: this.newTaskText,
+        text: marked(this.newTaskText),
+        markdown: this.newTaskText,
         complete: false,
         date_added: new Date()
       });
       this.addNewActive = false;
       this.newTaskText = "";
     },
-    updateTask() {
+    saveTaskText() {
       const task = this.tasks[this.selectedTask];
       db.collection("tasks")
         .doc(task.id)
         .update({
-          title: this.editTaskText
+          title: marked(this.editTaskText),
+          markdown: this.editTaskText
         });
       this.editActive = false;
+      this.editTaskText = "";
     },
     moveTask() {},
     deleteTask() {
@@ -227,7 +229,7 @@ li {
   width: 100%;
 }
 
-input {
+textarea {
   width: 100%;
   background: transparent;
   color: var(--color-text);

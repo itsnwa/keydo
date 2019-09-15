@@ -9,9 +9,8 @@
         }"
         v-for="(task, index) in tasks"
         :key="task.id"
-      >
-        {{ task.title }}
-      </li>
+        v-html="task.text"
+      ></li>
     </ul>
   </section>
 </template>
