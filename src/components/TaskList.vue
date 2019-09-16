@@ -9,13 +9,15 @@
         }"
         v-for="(task, index) in tasks"
         :key="task.id"
-        v-html="task.text"
+        v-html="markdown(task.text)"
       ></li>
     </ul>
   </section>
 </template>
 
 <script>
+import marked from "marked";
+
 export default {
   props: {
     tasks: {
@@ -25,6 +27,11 @@ export default {
     selected: {
       type: Number,
       required: false
+    }
+  },
+  methods: {
+    markdown(text) {
+      return marked(text);
     }
   }
 };

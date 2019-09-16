@@ -38,7 +38,6 @@ import { db } from "./db";
 import Logo from "@/components/Logo";
 import Guide from "@/components/Guide";
 import TaskList from "@/components/TaskList";
-import marked from "marked";
 
 export default {
   name: "app",
@@ -124,8 +123,7 @@ export default {
     },
     addTask() {
       db.collection("tasks").add({
-        text: marked(this.newTaskText),
-        markdown: this.newTaskText,
+        text: this.newTaskText,
         complete: false,
         date_added: new Date()
       });
@@ -137,8 +135,7 @@ export default {
       db.collection("tasks")
         .doc(task.id)
         .update({
-          title: marked(this.editTaskText),
-          markdown: this.editTaskText
+          text: this.editTaskText
         });
       this.editActive = false;
       this.editTaskText = "";
